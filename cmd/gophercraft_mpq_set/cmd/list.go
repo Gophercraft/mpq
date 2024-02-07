@@ -12,8 +12,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// listSetCmd represents the listSet command
-var listSetCmd = &cobra.Command{
+// list_set_command represents the list command
+var list_set_command = &cobra.Command{
 	Use:   "list",
 	Short: "Lists a MPQ set",
 	Long:  `Load multiple MPQ archives into one set, listing all contents in a merged view`,
@@ -50,20 +50,6 @@ var listSetCmd = &cobra.Command{
 		}
 		count := 0
 
-		// file, err := set.Open("Sound\\CinematicVoices\\BloodElfNarration.mp3")
-		// if err != nil {
-		// 	fmt.Println(err)
-		// 	os.Exit(0)
-		// }
-		// fmt.Println("size", file.Size())
-		// data, err := io.ReadAll(file)
-		// if err != nil {
-		// 	fmt.Println("readall failed:", err)
-		// 	os.Exit(0)
-		// }
-		// os.WriteFile("A:\\bloodelf.mp3", data, 0700)
-		// file.Close()
-
 		set_list, err := set.List()
 		if err != nil {
 			fmt.Println(err)
@@ -97,16 +83,8 @@ var listSetCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(listSetCmd)
+	root_cmd.AddCommand(list_set_command)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// listSetCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	listSetCmd.Flags().StringP("chain-json", "c", "", "load a list of MPQ globs from a JSON file")
-	listSetCmd.Flags().StringP("working-directory", "w", "", "working directory")
+	list_set_command.Flags().StringP("chain-json", "c", "", "load a list of MPQ globs from a JSON file")
+	list_set_command.Flags().StringP("working-directory", "w", "", "working directory")
 }
