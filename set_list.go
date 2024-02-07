@@ -2,6 +2,7 @@ package mpq
 
 import (
 	"sort"
+	"strings"
 )
 
 type set_list struct {
@@ -11,9 +12,7 @@ type set_list struct {
 
 func (set *Set) combine_list() (err error) {
 	// merge lists into a dictionary to avoid repetition
-	type nub struct{}
-	var n nub
-	var dict = map[string]nub{}
+	var dict = map[string]string{}
 	var list List
 	for _, archive := range set.archives {
 		list, err = archive.List()
@@ -21,15 +20,16 @@ func (set *Set) combine_list() (err error) {
 			return err
 		}
 		for list.Next() {
-			dict[list.Path()] = n
+			path := list.Path()
+			dict[strings.ToLower(path)] = path
 		}
 		list.Close()
 	}
 	// combine dictionary into a sorted slice of strings
 	set.combined_list = make([]string, len(dict))
 	i := 0
-	for k := range dict {
-		set.combined_list[i] = k
+	for _, v := range dict {
+		set.combined_list[i] = v
 		i++
 	}
 	dict = nil

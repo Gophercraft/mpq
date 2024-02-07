@@ -1,6 +1,9 @@
 package mpq
 
-import "bufio"
+import (
+	"bufio"
+	"fmt"
+)
 
 type archive_list struct {
 	listfile *File
@@ -26,6 +29,10 @@ func (archive *Archive) List() (list List, err error) {
 func (list *archive_list) Next() bool {
 	for {
 		if !list.scanner.Scan() {
+			if list.scanner.Err() != nil {
+				fmt.Println("mpq: error scanning list", list.scanner.Err())
+				return false
+			}
 			return false
 		}
 

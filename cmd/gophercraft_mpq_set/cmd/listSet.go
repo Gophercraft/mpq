@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/Gophercraft/mpq"
@@ -45,23 +48,51 @@ var listSetCmd = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(0)
 		}
+		count := 0
+
+		// file, err := set.Open("Sound\\CinematicVoices\\BloodElfNarration.mp3")
+		// if err != nil {
+		// 	fmt.Println(err)
+		// 	os.Exit(0)
+		// }
+		// fmt.Println("size", file.Size())
+		// data, err := io.ReadAll(file)
+		// if err != nil {
+		// 	fmt.Println("readall failed:", err)
+		// 	os.Exit(0)
+		// }
+		// os.WriteFile("A:\\bloodelf.mp3", data, 0700)
+		// file.Close()
+
 		set_list, err := set.List()
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(0)
 		}
-
-		count := 0
+		var data []byte
 
 		for set_list.Next() {
 			count++
 			path := set_list.Path()
-			fmt.Println("List =>", path)
+			file, err := set.Open(path)
+			if err != nil {
+				fmt.Println(path, err)
+				break
+			}
+			data, err = io.ReadAll(file)
+			if err != nil {
+				fmt.Println("readall failed:", path, err)
+				break
+			}
+			sum256 := sha256.Sum256(data)
+			shasum := hex.EncodeToString(sum256[:])
+			fmt.Println(shasum, path)
+
+			file.Close()
 		}
 
 		set_list.Close()
 		set.Close()
-		fmt.Println(count, "files listed!")
 	},
 }
 

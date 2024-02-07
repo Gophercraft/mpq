@@ -69,3 +69,4 @@ Documentation and logic inspired by [StormLib](https://github.com/ladislav-zezul
 
 Cryptographic routines taken from [go.Zamara](https://github.com/aphistic/go.Zamara) by Kristin Davidson
 
+All glory to Mike O'Brien.

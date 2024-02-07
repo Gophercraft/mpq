@@ -1,6 +1,7 @@
 package mpq
 
 import (
+	"fmt"
 	"io"
 )
 
@@ -19,6 +20,9 @@ func (file *File) Read(b []byte) (n int, err error) {
 
 		// read from the current sector
 		n, err = file.sector_reader.Read(b)
+
+		file.bytes_read += uint64(n)
+
 		if err == io.EOF {
 			// if the current sector has been read completely
 			// move to next sector
@@ -26,8 +30,13 @@ func (file *File) Read(b []byte) (n int, err error) {
 			file.sector_index++
 
 			// If this is the last sector offset, then we're truly out of data to read
-			if file.sector_index == len(file.sector_offsets)-1 {
-				// return n, io.EOF
+			if file.sector_index == file.sector_count {
+				// if we've reached the end of the file,
+				// the number of bytes read must be equal to the uncompressed file size
+				// if not, a serious error has occurred
+				if file.bytes_read != file.size {
+					err = fmt.Errorf("mpq: reached end of file '%s', but # of bytes read (%d) mismatches the size of the file (%d)", file.path, file.bytes_read, file.size)
+				}
 				return
 			}
 

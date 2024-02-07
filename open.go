@@ -44,5 +44,9 @@ func Open(path string) (archive *Archive, err error) {
 	if err != nil {
 		return
 	}
+
+	// pre-calculate information about reading files
+	archive.sector_size = int(uint32(512) << uint32(archive.header.SectorSize))
+
 	return
 }

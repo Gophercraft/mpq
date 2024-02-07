@@ -21,4 +21,6 @@ type Archive struct {
 	block_table []info.BlockTableEntry
 	// The table holding extended file offset bits
 	hi_block_table []uint16
+	// the size of a sector
+	sector_size int
 }

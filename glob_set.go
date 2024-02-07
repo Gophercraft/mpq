@@ -1,6 +1,8 @@
 package mpq
 
-import "path/filepath"
+import (
+	"path/filepath"
+)
 
 // Opens a Set of archives using a list of glob patterns
 func GlobSet(patterns ...string) (set *Set, err error) {

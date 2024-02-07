@@ -29,6 +29,7 @@ func (archive *Archive) Open(path string) (file *File, err error) {
 		return
 	}
 	block_table_entry := &archive.block_table[block_index]
+
 	// Get the position of the encoded file
 	file_position := uint64(block_table_entry.FilePos)
 	// The file size might be higher if it's encoded with more than 32 bits
@@ -40,6 +41,7 @@ func (archive *Archive) Open(path string) (file *File, err error) {
 	file_position = uint64(archive.archive_pos) + file_position
 	// Begin constructing file object
 	file = new(File)
+	file.path = path
 	file.archive = archive
 	file.archive_position = file_position
 	file.flags = block_table_entry.Flag
@@ -67,14 +69,26 @@ func (archive *Archive) Open(path string) (file *File, err error) {
 		return
 	}
 
-	if !file.has_flag(info.FileSingleUnit) {
-		// Read offsets for multi-sector files
+	// some files are implicitly single-unit (speech-enUS.MPQ : BloodElfAmbience.mp3)
+	implicit_single_unit := !file.has_flag(info.FileCompress) && file.compressed_size == file.size
+
+	if !file.has_flag(info.FileSingleUnit) && !implicit_single_unit {
+		// calculate number of sectors
 		var sector_count uint32
 		sector_count, err = file.get_sector_count()
 		if err != nil {
 			return
 		}
-		sector_data := make([]byte, (sector_count+1)*4)
+		file.sector_count = int(sector_count)
+
+		// we add 1 to store the upper limit of the final sector
+		num_sector_offsets := file.sector_count + 1
+		// there is a "sector" to store the checksum table
+		if file.has_flag(info.FileSectorCRC) {
+			num_sector_offsets++
+		}
+		// Read offsets for multi-sector files
+		sector_data := make([]byte, num_sector_offsets*4)
 		if _, err = io.ReadFull(file.file, sector_data); err != nil {
 			return
 		}
@@ -84,18 +98,19 @@ func (archive *Archive) Open(path string) (file *File, err error) {
 				return
 			}
 		}
+
 		// Decode sector data
-		file.sector_offsets = make([]uint32, sector_count)
+		file.sector_offsets = make([]uint32, num_sector_offsets)
 		for i := range file.sector_offsets {
 			file.sector_offsets[i] = binary.LittleEndian.Uint32(sector_data[i*4 : (i+1)*4])
 		}
 	} else {
+		file.sector_count = 1
 		// Since this is flagged as a single unit file, the offsets can be inferred as a simple slice
 		file.sector_offsets = []uint32{
 			0,
 			block_table_entry.CompressedSize,
 		}
-
 	}
 
 	return
