@@ -48,7 +48,10 @@ var export_cmd = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(0)
 		}
-		os.Chdir(working_directory)
+		if err = os.Chdir(working_directory); err != nil {
+			fmt.Println(err)
+			os.Exit(0)
+		}
 		var chain []string
 		if err = json.Unmarshal(chainjsondata, &chain); err != nil {
 			fmt.Println(err)
@@ -72,13 +75,14 @@ var export_cmd = &cobra.Command{
 		for set_list.Next() {
 			count++
 			path := set_list.Path()
-			output_path_parts := strings.Split(path, "\\")
-			output_path := filepath.Join(append([]string{base_export_path}, output_path_parts...)...)
 			file, err := set.Open(path)
 			if err != nil {
 				fmt.Println(path, err)
 				break
 			}
+			path = strings.ToLower(path)
+			output_path_parts := strings.Split(path, "\\")
+			output_path := filepath.Join(append([]string{base_export_path}, output_path_parts...)...)
 			dir_containing_output := filepath.Dir(output_path)
 			if err = os.MkdirAll(dir_containing_output, 0700); err != nil {
 				fmt.Println(path, err)

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 
 	"github.com/Gophercraft/mpq"
 	"github.com/spf13/cobra"
@@ -23,6 +24,7 @@ var list_set_command = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(0)
 		}
+		working_directory = filepath.Clean(working_directory)
 		chainjson, err := cmd.Flags().GetString("chain-json")
 		if err != nil {
 			fmt.Println(err)
@@ -37,7 +39,10 @@ var list_set_command = &cobra.Command{
 			fmt.Println(err)
 			os.Exit(0)
 		}
-		os.Chdir(working_directory)
+		if err = os.Chdir(working_directory); err != nil {
+			fmt.Println(err)
+			os.Exit(0)
+		}
 		var chain []string
 		if err = json.Unmarshal(chainjsondata, &chain); err != nil {
 			fmt.Println(err)
