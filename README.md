@@ -8,6 +8,10 @@
 
 This is an MPQ decoder compatible with MPQ v1 and v2. Support for later versions will be added over time.
 
+# Tool
+
+See [tool.md](docs/tool.md) to read about how to use the included extraction tool.
+
 # Usage
 
 Start by opening an Archive with `mpq.Open()`:
