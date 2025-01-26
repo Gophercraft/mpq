@@ -4,14 +4,13 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/Gophercraft/mpq/info"
 )
 
 const header_alignment = 512
 
-func (archive *Archive) read_header(file *os.File) (err error) {
+func (archive *Archive) read_header(file io.ReadSeeker) (err error) {
 	// seek to end of file (gets file size)
 	archive.file_size, err = file.Seek(0, io.SeekEnd)
 	if err != nil {
@@ -41,7 +40,7 @@ func (archive *Archive) read_header(file *os.File) (err error) {
 
 		// check for signatures of MPQ info
 		switch {
-		case bytes.Equal(magic_bytes[:], info.UserDataSignature):
+		case bytes.Equal(magic_bytes[:], info.UserDataSignature[:]):
 			// read user data
 			err = info.ReadUserData(file, &archive.user_data)
 			if err != nil {
@@ -54,7 +53,7 @@ func (archive *Archive) read_header(file *os.File) (err error) {
 				err = fmt.Errorf("failed to seek to position of MPQ header pointed to by user data: %s", err)
 				return
 			}
-		case bytes.Equal(magic_bytes[:], info.HeaderDataSignature):
+		case bytes.Equal(magic_bytes[:], info.HeaderDataSignature[:]):
 			// read header info
 			err = info.ReadHeader(file, &archive.header)
 			if err != nil {

@@ -1,2 +1,2 @@
-// Package crypto provides cryptographic routines used by the MPQ format
+// Package crypto implements the Blizz hashing and encryption algorithms
 package crypto

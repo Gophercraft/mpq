@@ -7,29 +7,28 @@ import (
 	"github.com/Gophercraft/mpq/info"
 )
 
-// File represents a compressed file from within the MPQ
-// For the MPQ Archive file itself, refer to Archive.
+// File represents a handle to a file contained within an [Archive]
 type File struct {
 	// the path that was used to open the File
-	path string
+	name string
 	// the Archive this was opened with
 	archive *Archive
 	// the fd to the underlying MPQ
 	file *os.File
-	// the flags found in the block table
-	flags info.FileFlag
 	// the locale (refer to info.HashTableEntry)
 	locale uint16
 	// the platform (refer to info.HashTableEntry)
 	platform uint8
-	// the size of the uncompressed file
-	size uint64
 	// the decryption key
 	decryption_key uint32
-	// the size of the compressed file
+	// the location of the file's block relative to the start of the archive
+	block_position uint64
+	// the size of the uncompressed file
+	size uint64
+	// the size of the compressed file block
 	compressed_size uint64
-	// the location of the file's data in the MPQ archive
-	archive_position uint64
+	// the flags found in the block table
+	flags info.FileFlag
 	// the number of sectors
 	sector_count int
 	// the current sector

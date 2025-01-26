@@ -2,8 +2,7 @@ package mpq
 
 import "github.com/Gophercraft/mpq/info"
 
-// Archive represents a *singular* .MPQ archive file
-// To interact with multiple overlapping MPQs at once, refer to mpq.Set.
+// An Archive provides access to a MoPaQ archive file
 type Archive struct {
 	// The fully qualified path pointing to the .MPQ file
 	path string
@@ -21,6 +20,8 @@ type Archive struct {
 	block_table []info.BlockTableEntry
 	// The table holding extended file offset bits
 	hi_block_table []uint16
-	// the size of a sector
-	sector_size int
+	// The HET table
+	het_table het_table
+	// The BET table
+	bet_table bet_table
 }

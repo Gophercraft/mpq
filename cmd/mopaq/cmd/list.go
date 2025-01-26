@@ -40,7 +40,7 @@ var list_set_command = &cobra.Command{
 	Short: "Lists a MPQ set using a chain json file",
 	Long:  `Load multiple MPQ archives into one set, listing all contents in a merged view`,
 	Run: func(cmd *cobra.Command, args []string) {
-		checksum, err := cmd.Flags().GetString("checksum")
+		checksum, err := cmd.Flags().GetString("hash-algorithm")
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -99,6 +99,6 @@ var list_set_command = &cobra.Command{
 func init() {
 	root_cmd.AddCommand(list_set_command)
 
-	list_set_command.Flags().StringP("checksum", "c", "sha256", fmt.Sprintf("the checksum algorithm to use. set to an empty string to skip hashing. supported hash functions include %s", strings.Join(supported_hash_functions(), ", ")))
+	list_set_command.Flags().StringP("hash-algorithm", "a", "", fmt.Sprintf("the hash algorithm to use. set to an empty string to skip hashing. supported hash functions include %s", strings.Join(supported_hash_functions(), ", ")))
 	list_set_command.Flags().StringP("working-directory", "w", "", "working directory")
 }

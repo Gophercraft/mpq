@@ -5,13 +5,14 @@ import (
 	"path/filepath"
 )
 
-func Open(path string) (archive *Archive, err error) {
+// Open will open the MoPaQ [Archive] specified by name
+func Open(name string) (archive *Archive, err error) {
 	archive = new(Archive)
 	// Get fully qualified path to file
-	archive.path, err = filepath.Abs(path)
+	archive.path, err = filepath.Abs(name)
 	if err != nil {
 		// Just use regular path if this errors
-		archive.path = path
+		archive.path = name
 		err = nil
 	}
 
@@ -39,14 +40,21 @@ func Open(path string) (archive *Archive, err error) {
 		return
 	}
 
+	// read HET table
+	if err = archive.read_het_table(file); err != nil {
+		return
+	}
+
+	// read BET table
+	if err = archive.read_bet_table(file); err != nil {
+		return
+	}
+
 	// close fd
 	err = file.Close()
 	if err != nil {
 		return
 	}
-
-	// pre-calculate information about reading files
-	archive.sector_size = int(uint32(512) << uint32(archive.header.SectorSize))
 
 	return
 }

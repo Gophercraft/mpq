@@ -15,19 +15,19 @@ func ReadBlockTableEntry(reader io.Reader, block_table_entry *BlockTableEntry) e
 	entry_slice := block_table_entry_data[:]
 
 	// Read file pos
-	block_table_entry.FilePos = binary.LittleEndian.Uint32(entry_slice[:4])
+	block_table_entry.Position = binary.LittleEndian.Uint32(entry_slice[:4])
 	entry_slice = entry_slice[4:]
 
 	// Read compressed size
-	block_table_entry.CompressedSize = binary.LittleEndian.Uint32(entry_slice[:4])
+	block_table_entry.BlockSize = binary.LittleEndian.Uint32(entry_slice[:4])
 	entry_slice = entry_slice[4:]
 
 	// Read uncompressed size
-	block_table_entry.DecompressedSize = binary.LittleEndian.Uint32(entry_slice[:4])
+	block_table_entry.FileSize = binary.LittleEndian.Uint32(entry_slice[:4])
 	entry_slice = entry_slice[4:]
 
 	// Read file flags
-	block_table_entry.Flag = FileFlag(binary.LittleEndian.Uint32(entry_slice[:4]))
+	block_table_entry.Flags = FileFlag(binary.LittleEndian.Uint32(entry_slice[:4]))
 
 	return nil
 }

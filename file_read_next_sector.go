@@ -19,7 +19,7 @@ func (file *File) read_next_sector() (sector io.Reader, err error) {
 	}
 
 	// seek file to the location of the sector
-	if _, err = file.file.Seek(int64(file.archive_position+uint64(file.sector_offsets[file.sector_index])), io.SeekStart); err != nil {
+	if _, err = file.file.Seek(file.Position()+int64(file.sector_offsets[file.sector_index]), io.SeekStart); err != nil {
 		err = fmt.Errorf("mpq: could not seek to next sector: %w", err)
 		return
 	}
@@ -42,9 +42,7 @@ func (file *File) read_next_sector() (sector io.Reader, err error) {
 
 	// decrypt sector if applicable
 	if file.has_flag(info.FileEncrypted) {
-		if err = crypto.Decrypt(file.decryption_key+uint32(file.sector_index), sector_data); err != nil {
-			return
-		}
+		crypto.Decrypt(file.decryption_key+uint32(file.sector_index), sector_data)
 	}
 
 	// decompress data if applicable
@@ -55,7 +53,7 @@ func (file *File) read_next_sector() (sector io.Reader, err error) {
 		// Sometimes the last sector can be inferred to be uncompressed
 		// because it completes the file by addition
 		// or its length is equal to the MPQ header's sector size
-		needs_decompression_applied := !(uint64(len(sector_data))+file.bytes_read == file.size || len(sector_data) == file.archive.sector_size)
+		needs_decompression_applied := !(uint64(len(sector_data))+file.bytes_read == file.size || len(sector_data) == int(info.LogicalSectorSize(&file.archive.header)))
 
 		if needs_decompression_applied {
 			var decompressed_data []byte

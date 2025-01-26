@@ -6,11 +6,13 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Chat on discord](https://img.shields.io/discord/556039662997733391.svg)](https://discord.gg/xPtuEjt)
 
-This is an MPQ decoder compatible with MPQ v1 and v2. Support for later versions will be added over time.
+This package provides an MPQ decoder compatible with MPQ versions 1-4. 
 
-# Tool
+# `mopaq` command-line utility
 
-See [tool.md](docs/tool.md) to read about how to use the included extraction tool.
+This repository includes a command-line tool that you can use to inspect an MPQ archive's contents, extract a file, or a large set of files.
+
+See [mopaq.md](docs/mopaq.md) to read about how to install and use the tool.
 
 # Usage
 

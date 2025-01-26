@@ -6,7 +6,7 @@ import (
 
 // return the number of sectors used to store a file
 func (file *File) get_sector_count() (sector_count uint32, err error) {
-	sector_size := uint32(file.archive.sector_size)
+	sector_size := uint32(info.LogicalSectorSize(&file.archive.header))
 
 	if file.has_flag(info.FileSingleUnit) {
 		// a single unit file only ever contains one sector.

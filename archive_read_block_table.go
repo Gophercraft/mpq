@@ -5,7 +5,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/Gophercraft/mpq/crypto"
 	"github.com/Gophercraft/mpq/info"
@@ -15,24 +14,7 @@ const max_block_table_length = 50000000
 
 // returns the absolute position of the Archive's block table
 func (archive *Archive) get_block_table_position() (absolute_pos uint64, err error) {
-	relative_pos := uint64(archive.header.BlockTablePos)
-	// Add expanded bits if applicable
-	if archive.header.Version >= 1 {
-		relative_pos |= uint64(archive.header.BlockTablePosHi) << 32
-	}
-
-	absolute_pos = uint64(archive.archive_pos) + relative_pos
-	return
-}
-
-// determines if a hi block table needs to be decoded
-func (archive *Archive) contains_hi_block_table() bool {
-	return archive.header.HiBlockTablePos64 != 0
-}
-
-// returns the absolute position of the Archive's hi-block table
-func (archive *Archive) get_hi_block_table_position() (absolute_pos uint64, err error) {
-	absolute_pos = uint64(archive.archive_pos) + archive.header.HiBlockTablePos64
+	absolute_pos = uint64(archive.archive_pos) + info.BlockTablePos(&archive.header)
 	return
 }
 
@@ -42,7 +24,7 @@ func (archive *Archive) get_block_table_length() (length uint64, err error) {
 }
 
 // reads all block table entries into Archive
-func (archive *Archive) read_block_table(file *os.File) (err error) {
+func (archive *Archive) read_block_table(file io.ReadSeeker) (err error) {
 	var block_table_position uint64
 	var block_table_length uint64
 	var hi_block_position uint64
@@ -69,10 +51,8 @@ func (archive *Archive) read_block_table(file *os.File) (err error) {
 		return
 	}
 	// Decrypt
-	decrypt_seed := crypto.HashString("(block table)", info.HashFileKey)
-	if err = crypto.Decrypt(decrypt_seed, encrypted_block_table); err != nil {
-		return
-	}
+	decrypt_seed := crypto.HashString("(block table)", crypto.HashEncryptKey)
+	crypto.Decrypt(decrypt_seed, encrypted_block_table)
 	decrypted_block_table_reader := bytes.NewReader(encrypted_block_table)
 
 	// Allocate actual block table
@@ -87,7 +67,7 @@ func (archive *Archive) read_block_table(file *os.File) (err error) {
 	}
 
 	// If applicable, also load the hi block offset table
-	if archive.contains_hi_block_table() {
+	if archive.ContainsHiBlockTable() {
 		hi_block_position, err = archive.get_hi_block_table_position()
 		if err != nil {
 			return

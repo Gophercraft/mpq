@@ -9,8 +9,8 @@ import (
 
 func (archive *Archive) hash_lookup_name(name string) (index int, entry *info.HashTableEntry, err error) {
 	// Convert name string into hashes
-	name_1 := crypto.HashString(name, info.HashNameA)
-	name_2 := crypto.HashString(name, info.HashNameB)
+	name_1 := crypto.HashString(name, crypto.HashNameA)
+	name_2 := crypto.HashString(name, crypto.HashNameB)
 
 	// Lookup hashes in table
 	index, entry, err = archive.search_hash_table(name_1, name_2)

@@ -2,14 +2,17 @@ package mpq
 
 import "bytes"
 
-// Each time Next() returns true
-// Path() will return a unique path
 type List interface {
+	// Each time Next() returns true
 	Next() bool
+	// Path() will return a unique path
 	Path() string
+	// Close your list when you are done
 	Close() error
 }
 
+// CRLF-friendly alternative to the default Scan function
+// (listfile) uses CRLF which sucks
 func scan_lines(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	if atEOF && len(data) == 0 {
 		return 0, nil, nil

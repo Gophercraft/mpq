@@ -50,7 +50,7 @@ func open_set(cmd *cobra.Command, args []string) (set *mpq.Set) {
 		}
 	} else {
 		var err error
-		set, err = mpq.GlobSet(unary_filepath)
+		set, err = mpq.GlobSet(args...)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

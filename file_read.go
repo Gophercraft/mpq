@@ -3,9 +3,21 @@ package mpq
 import (
 	"fmt"
 	"io"
+
+	"github.com/Gophercraft/mpq/info"
+)
+
+var (
+	ErrReadPatchFile = fmt.Errorf("mpq: patch files not yet implemented")
 )
 
 func (file *File) Read(b []byte) (n int, err error) {
+	// cannot currently read patch files
+	if file.has_flag(info.FilePatchFile) {
+		err = ErrReadPatchFile
+		return
+	}
+
 	if len(b) == 0 {
 		return
 	}
@@ -35,7 +47,7 @@ func (file *File) Read(b []byte) (n int, err error) {
 				// the number of bytes read must be equal to the uncompressed file size
 				// if not, a serious error has occurred
 				if file.bytes_read != file.size {
-					err = fmt.Errorf("mpq: reached end of file '%s', but # of bytes read (%d) mismatches the size of the file (%d)", file.path, file.bytes_read, file.size)
+					err = fmt.Errorf("mpq: reached end of file '%s', but # of bytes read (%d) mismatches the size of the file (%d)", file.name, file.bytes_read, file.size)
 				}
 				return
 			}

@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 )
 
-// Opens a Set of archives using a list of glob patterns
+// Opens a [Set] of archives using a list of glob patterns
 func GlobSet(patterns ...string) (set *Set, err error) {
 	set = NewSet()
 

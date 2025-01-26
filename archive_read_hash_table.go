@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/Gophercraft/mpq/crypto"
 	"github.com/Gophercraft/mpq/info"
@@ -14,13 +13,7 @@ const max_hash_table_length = 50000000
 
 // returns the absolute position of the Archive's hash table
 func (archive *Archive) get_hash_table_position() (absolute_pos uint64, err error) {
-	relative_pos := uint64(archive.header.HashTablePos)
-	// Add expanded bits if applicable
-	if archive.header.Version >= 1 {
-		relative_pos |= uint64(archive.header.HashTablePosHi) << 32
-	}
-
-	absolute_pos = uint64(archive.archive_pos) + relative_pos
+	absolute_pos = uint64(archive.archive_pos) + info.HashTablePos(&archive.header)
 	return
 }
 
@@ -29,7 +22,7 @@ func (archive *Archive) get_hash_table_length() (length uint64, err error) {
 }
 
 // read all hash table entries into Archive
-func (archive *Archive) read_hash_table(file *os.File) (err error) {
+func (archive *Archive) read_hash_table(file io.ReadSeeker) (err error) {
 	// seek to the start of the hash table
 	var hash_table_position uint64
 	var hash_table_length uint64
@@ -61,10 +54,8 @@ func (archive *Archive) read_hash_table(file *os.File) (err error) {
 	}
 
 	// decrypt hash table
-	decrypt_seed := crypto.HashString("(hash table)", info.HashFileKey)
-	if err = crypto.Decrypt(decrypt_seed, hash_table_data); err != nil {
-		return
-	}
+	decrypt_seed := crypto.HashString("(hash table)", crypto.HashEncryptKey)
+	crypto.Decrypt(decrypt_seed, hash_table_data)
 
 	// read hash table
 	hash_table_reader := bytes.NewReader(hash_table_data)

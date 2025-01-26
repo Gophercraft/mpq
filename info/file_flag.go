@@ -1,8 +1,12 @@
 package info
 
-import "strings"
+import (
+	"strings"
+)
 
 type FileFlag uint32
+
+type FileCompression uint8
 
 const (
 	FileImplode      FileFlag = 0x00000100 // Implode method (By PKWARE Data Compression Library)
@@ -22,10 +26,10 @@ const (
 func (flag FileFlag) String() string {
 	var readout []string
 	if flag&FileImplode != 0 {
-		readout = append(readout, "implode")
+		readout = append(readout, "uses PKWARE compression method")
 	}
 	if flag&FileCompress != 0 {
-		readout = append(readout, "compress methods")
+		readout = append(readout, "uses multiple-compression method")
 	}
 	if flag&FileEncrypted != 0 {
 		readout = append(readout, "an encrypted file")
@@ -50,9 +54,6 @@ func (flag FileFlag) String() string {
 	}
 	if flag&FileExists != 0 {
 		readout = append(readout, "file exists (?)")
-	}
-	if flag&FileCompressMask != 0 {
-		readout = append(readout, "compression mask")
 	}
 	if flag&FileFixKey != 0 {
 		readout = append(readout, "fix key (DEPRECATED!)")

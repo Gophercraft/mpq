@@ -4,7 +4,13 @@ import (
 	"crypto/md5"
 )
 
-const MaxHeaderSize = 0x17FF
+const (
+	MaxHeaderSize = 0x17FF
+	Header0Size   = 24
+	Header1Size   = 12
+	Header2Size   = 24
+	Header3Size   = 140
+)
 
 // MPQ file header
 type Header struct {
