@@ -97,8 +97,7 @@ var list_set_command = &cobra.Command{
 }
 
 func init() {
-	root_cmd.AddCommand(list_set_command)
-
+	add_set_commands(list_set_command)
 	list_set_command.Flags().StringP("hash-algorithm", "a", "", fmt.Sprintf("the hash algorithm to use. set to an empty string to skip hashing. supported hash functions include %s", strings.Join(supported_hash_functions(), ", ")))
-	list_set_command.Flags().StringP("working-directory", "w", "", "working directory")
+	root_cmd.AddCommand(list_set_command)
 }

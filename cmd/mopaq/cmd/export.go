@@ -91,16 +91,8 @@ var export_cmd = &cobra.Command{
 }
 
 func init() {
+	add_set_commands(export_cmd)
+	export_cmd.Flags().StringP("export-directory", "o", "", "output directory")
 	root_cmd.AddCommand(export_cmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// listSetCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	export_cmd.Flags().StringP("working-directory", "w", "", "working directory")
-	export_cmd.Flags().StringP("export-directory", "o", "", "output directory")
 }

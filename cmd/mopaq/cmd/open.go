@@ -10,6 +10,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func add_set_commands(cmd *cobra.Command) {
+	flags := cmd.Flags()
+	flags.StringP("data-directory", "d", "", "set the Data directory when using a chain file")
+}
+
 func open_set(cmd *cobra.Command, args []string) (set *mpq.Set) {
 	if len(args) == 0 {
 		cmd.Help()
@@ -28,7 +33,7 @@ func open_set(cmd *cobra.Command, args []string) (set *mpq.Set) {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		working_directory, err := cmd.Flags().GetString("working-directory")
+		working_directory, err := cmd.Flags().GetString("data-directory")
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(0)
